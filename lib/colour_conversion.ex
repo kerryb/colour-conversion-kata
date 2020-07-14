@@ -1,7 +1,8 @@
 defmodule ColourConversion do
   use Bitwise
 
-  def convert(%{r: r, g: g, b: b}) when r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 do
+  def convert(%{r: r, g: g, b: b})
+      when r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 do
     "##{((r <<< 16) + (g <<< 8) + b) |> Integer.to_string(16) |> String.pad_leading(6, "0")}"
   end
 

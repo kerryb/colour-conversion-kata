@@ -56,10 +56,34 @@ defmodule ColourConversionTest do
         assert convert(rgb) == "Not valid input"
       end
     end
+
+    property "returns an error message for hex strings that are too long" do
+      forall hex <- hex_string(7, :inf) do
+        assert convert(hex) == "Not valid input"
+      end
+    end
+
+    property "returns an error message for hex strings that are too short" do
+      forall hex <- hex_string(0, 5) do
+        assert convert(hex) == "Not valid input"
+      end
+    end
   end
 
   defp non_byte_integer do
     oneof([integer(:inf, -1), integer(256, :inf)])
+  end
+
+  defp hex_string(min_length, max_length) do
+    let length <- integer(min_length, max_length) do
+      let chars <- vector(length, hex_char()) do
+        Enum.join(chars)
+      end
+    end
+  end
+
+  defp hex_char do
+    oneof(~w(0 1 2 3 4 5 6 7 8 9 a b c d e f))
   end
 
   defp to_hex(integer) do
