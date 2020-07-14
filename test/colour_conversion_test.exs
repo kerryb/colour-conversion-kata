@@ -57,13 +57,25 @@ defmodule ColourConversionTest do
       end
     end
 
-    property "returns an error message for hex strings that are too long" do
+    property "returns an error message for hex strings (with a leading hash) that are too long" do
+      forall hex <- hex_string(7, :inf) do
+        assert convert("#" <> hex) == "Not valid input"
+      end
+    end
+
+    property "returns an error message for hex strings(with a leading hash)  that are too short" do
+      forall hex <- hex_string(0, 5) do
+        assert convert("#" <> hex) == "Not valid input"
+      end
+    end
+
+    property "returns an error message for hex strings (without a leading hash) that are too long" do
       forall hex <- hex_string(7, :inf) do
         assert convert(hex) == "Not valid input"
       end
     end
 
-    property "returns an error message for hex strings that are too short" do
+    property "returns an error message for hex strings(without a leading hash)  that are too short" do
       forall hex <- hex_string(0, 5) do
         assert convert(hex) == "Not valid input"
       end
