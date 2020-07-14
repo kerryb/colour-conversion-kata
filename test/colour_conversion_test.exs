@@ -80,6 +80,12 @@ defmodule ColourConversionTest do
         assert convert(hex) == "Not valid input"
       end
     end
+
+    property "returns an error message for non-hex strings" do
+      forall not_hex <- non_hex_string() do
+        assert convert(not_hex) == "Not valid input"
+      end
+    end
   end
 
   defp non_byte_integer do
@@ -98,9 +104,14 @@ defmodule ColourConversionTest do
     oneof(~w(0 1 2 3 4 5 6 7 8 9 a b c d e f))
   end
 
+  defp non_hex_string do
+    such_that(str <- binary(6), when: not (str =~ ~r/^[^\da-f]*$/))
+  end
+
   defp to_hex(integer) do
     integer
     |> Integer.to_string(16)
+    |> String.downcase
     |> String.pad_leading(2, "0")
   end
 end
