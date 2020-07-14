@@ -16,6 +16,9 @@ defmodule ColourConversion do
 
   def convert(<<"#", hex::binary>>), do: convert(hex)
 
+  def convert(<<r::binary-size(1), g::binary-size(1), b::binary-size(1)>>) do
+    convert "#{r}#{r}#{g}#{g}#{b}#{b}"
+  end
   def convert(<<r::binary-size(2), g::binary-size(2), b::binary-size(2)>>) do
     if "#{r}#{g}#{b}" =~ ~r/^[\da-f]*$/ do
       %{r: String.to_integer(r, 16), g: String.to_integer(g, 16), b: String.to_integer(b, 16)}

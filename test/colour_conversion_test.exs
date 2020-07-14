@@ -36,6 +36,14 @@ defmodule ColourConversionTest do
       end
     end
 
+    property "supports three-character hex codes" do
+      forall {r, g, b} <- {integer(0, 15), integer(0, 15), integer(0, 15)} do
+        hex = "#{unpadded_hex(r)}#{unpadded_hex(g)}#{unpadded_hex(b)}"
+        rgb = %{r: r * 17, g: g * 17, b: b * 17}
+        assert convert(hex) == rgb
+      end
+    end
+
     property "returns an error message for invalid red values" do
       forall {r, g, b} <- {non_byte_integer(), byte(), byte()} do
         rgb = %{r: r, g: g, b: b}
@@ -57,26 +65,38 @@ defmodule ColourConversionTest do
       end
     end
 
-    property "returns an error message for hex strings (with a leading hash) that are too long" do
+    property "returns an error message for hex strings (with a leading hash) that are longer than six characters" do
       forall hex <- hex_string(7, :inf) do
-        assert convert("#" <> hex) == "Not valid input"
+        assert convert("##{hex}") == "Not valid input"
       end
     end
 
-    property "returns an error message for hex strings(with a leading hash)  that are too short" do
-      forall hex <- hex_string(0, 5) do
-        assert convert("#" <> hex) == "Not valid input"
+    property "returns an error message for hex strings(with a leading hash) that are shorter than three characters" do
+      forall hex <- hex_string(0, 2) do
+        assert convert("##{hex}") == "Not valid input"
       end
     end
 
-    property "returns an error message for hex strings (without a leading hash) that are too long" do
+    property "returns an error message for hex strings(with a leading hash) that are four or five characters long" do
+      forall hex <- hex_string(4, 5) do
+        assert convert("##{hex}") == "Not valid input"
+      end
+    end
+
+    property "returns an error message for hex strings (without a leading hash) that are longer than six characters" do
       forall hex <- hex_string(7, :inf) do
         assert convert(hex) == "Not valid input"
       end
     end
 
-    property "returns an error message for hex strings(without a leading hash)  that are too short" do
-      forall hex <- hex_string(0, 5) do
+    property "returns an error message for hex strings(without a leading hash) that are shorter than three characters" do
+      forall hex <- hex_string(0, 2) do
+        assert convert(hex) == "Not valid input"
+      end
+    end
+
+    property "returns an error message for hex strings(without a leading hash) that are four or five characters long" do
+      forall hex <- hex_string(4, 5) do
         assert convert(hex) == "Not valid input"
       end
     end
@@ -108,10 +128,15 @@ defmodule ColourConversionTest do
     such_that(str <- binary(6), when: not (str =~ ~r/^[^\da-f]*$/))
   end
 
-  defp to_hex(integer) do
+  defp unpadded_hex(integer) do
     integer
     |> Integer.to_string(16)
-    |> String.downcase
+    |> String.downcase()
+  end
+
+  defp to_hex(integer) do
+    integer
+    |> unpadded_hex()
     |> String.pad_leading(2, "0")
   end
 end
