@@ -20,9 +20,16 @@ defmodule ColourConversionTest do
       end
     end
 
-    property "converts hex to rgb" do
+    property "converts hex (with a leading hash) to rgb" do
       forall {r, g, b} <- {byte(), byte(), byte()} do
         hex = "##{to_hex(r)}#{to_hex(g)}#{to_hex(b)}"
+        rgb = %{r: r, g: g, b: b}
+        assert convert(hex) == rgb
+      end
+    end
+    property "converts hex (without a leading hash) to rgb" do
+      forall {r, g, b} <- {byte(), byte(), byte()} do
+        hex = "#{to_hex(r)}#{to_hex(g)}#{to_hex(b)}"
         rgb = %{r: r, g: g, b: b}
         assert convert(hex) == rgb
       end
