@@ -17,7 +17,7 @@ defmodule ColourConversion do
   def convert(<<"#", hex::binary>>), do: convert(hex)
 
   def convert(<<r::binary-size(1), g::binary-size(1), b::binary-size(1)>>) do
-    convert("#{r}#{r}#{g}#{g}#{b}#{b}")
+    convert(r <> r <> g <> g <> b <> b)
   end
 
   def convert(<<r::binary-size(2), g::binary-size(2), b::binary-size(2)>>) do
