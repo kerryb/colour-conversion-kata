@@ -4,13 +4,11 @@ defmodule ColourConversion do
   @error_response "Not valid input"
 
   def convert(%{r: r, g: g, b: b}) when r in 0..255 and g in 0..255 and b in 0..255 do
-    hex =
-      ((r <<< 16) + (g <<< 8) + b)
-      |> Integer.to_string(16)
-      |> String.downcase()
-      |> String.pad_leading(6, "0")
-
-    "#" <>hex
+    ((r <<< 16) + (g <<< 8) + b)
+    |> Integer.to_string(16)
+    |> String.downcase()
+    |> String.pad_leading(6, "0")
+    |> String.replace_prefix("", "#")
   end
 
   def convert(<<"#", hex::binary>>), do: convert(hex)
