@@ -21,11 +21,9 @@ defmodule ColourConversion do
   end
 
   def convert(<<r::binary-size(2), g::binary-size(2), b::binary-size(2)>>) do
-    if "#{r}#{g}#{b}" =~ ~r/^[\da-f]*$/ do
       %{r: String.to_integer(r, 16), g: String.to_integer(g, 16), b: String.to_integer(b, 16)}
-    else
-      @error_response
-    end
+    rescue
+    _ in ArgumentError -> @error_response
   end
 
   def convert(_), do: @error_response
